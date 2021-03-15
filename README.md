@@ -1,4 +1,4 @@
-# Nginx (alpine) + Apache PHP (mod_php, debian) + MySQL (mariadb, alpine) reverse proxy
+# LAMP (Nginx (alpine) + Apache PHP (mod_php, debian) + MySQL (mariadb, alpine) reverse proxy) + L2 MOBIUS HI-FIVE SERVER
 - Run: `docker-compose up`
 - Nginx static file serve: `./nginx-public_html`
 - Apache + PHP: `./public_html`
