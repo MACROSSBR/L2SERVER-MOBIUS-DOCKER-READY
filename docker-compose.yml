@@ -1,16 +1,51 @@
-# Request from browser => nginx => static or php, if not static => php-apache => static or php
-# http://localhost:8000/nginx-index.html
-# http://localhost:8000/apache-index.html
-# http://localhost:8000/index.php
+
 version: '3'
+
 services:
-  mysql-mariadb:
-    build: './mysql'
-    ports:
-      - 8306:3306
-    env_file: ./.env
+  mariadb:
+    container_name: l2j-server-mariadb
+    image: yobasystems/alpine-mariadb:latest
     volumes:
-      - ./mysql-data:/var/lib/mysql
+      - /var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - 3306:3306
+  l2jserver:
+    container_name: l2j-server-docker
+    image: l2jserver/l2j-server-docker:latest
+    restart: always
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #   args:
+    #     branch_gs: "develop"
+    #     branch_dp: "develop"
+    environment:
+      IP_ADDRESS: ${GAMESERVER_ADDRESS}
+      RATE_XP: "1"
+      RATE_SP: "1"
+      ADMIN_RIGHTS: "True"
+      HELLBOUND_ACCESS: "True"
+      TVT_ENABLED: "True"
+      FORCE_GEODATA: "False"
+      COORD_SYNC: "-1"
+      BUFFER_SERVICE: "True"
+      CUSTOM_NPC_DATA: "True"
+      SAVE_GM_SPAWN_ON_CUSTOM: "True"
+      CUSTOM_SPAWNLIST_TABLE: "True"
+      CUSTOM_TELEPORT_TABLE: "True"
+      CUSTOM_NPC_BUFFER_TABLES: "True"
+      CUSTOM_SKILLS_LOAD: "True"
+      CUSTOM_ITEMS_LOAD: "True"
+      CUSTOM_MULTISELL_LOAD: "True"
+      CUSTOM_BUYLIST_LOAD: "True"
+    depends_on:
+      - mariadb
+    ports:
+      - 7777:7777
+      - 2106:2106
   nginx:
     build: './nginx'
     volumes:
@@ -27,4 +62,14 @@ services:
       - ./public_html:/home/public_html
     env_file: ./.env
     depends_on:
-      - mysql-mariadb
+      - mariadb
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:4.7
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mariadb
+    depends_on:
+    - mariadb    

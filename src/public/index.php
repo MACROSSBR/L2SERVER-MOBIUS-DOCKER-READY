@@ -55,7 +55,14 @@ $error = "";
 	
 	if(isset($_POST['login'])) 
 	{
-		$conn = new mysqli($server_host, $db_user_name, $db_user_password, $db_database);
+		$conn = new mysqli($server_host, $db_user_name, $db_user_password, $db_database,3306);
+		echo $server_host.'<br>';
+		echo $db_user_name.'<br>';
+		echo $db_user_password.'<br>';
+		echo $db_database.'<br>';
+		echo mysqli_connect_errno().'<br>';
+		echo mysqli_connect_error();
+		exit;
 		// Check connection
 		if (mysqli_connect_errno())
 		{
